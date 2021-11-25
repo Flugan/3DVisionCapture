@@ -1,0 +1,13 @@
+﻿<Window x:Class="CaptureGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CaptureGUI"
+        mc:Ignorable="d"
+        Title="SD3D for 3D Vision" Height="100" Width="300">
+    <Grid>
+        <Button x:Name="Scale" Content="Scale" HorizontalAlignment="Center" Height="84" VerticalAlignment="Center" Width="300" Click="Scale_Click"/>
+
+    </Grid>
+</Window>
