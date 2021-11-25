@@ -2,9 +2,11 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <d3d9.h>
+#include <D3dx9tex.h>
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d9.lib")
+#pragma comment (lib, "d3dx9.lib")
 
 // global declarations
 LPDIRECT3D9 d3d;    // the pointer to our Direct3D interface
@@ -14,7 +16,6 @@ LPDIRECT3DDEVICE9 d3ddev;    // the pointer to the device class
 void initD3D(HWND hWnd);    // sets up and initializes Direct3D
 void render_frame(void);    // renders a single frame
 void cleanD3D(void);    // closes Direct3D and releases memory
-void render3D(void);
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -23,8 +24,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 #define SCREEN_WIDTH  2560
 #define SCREEN_HEIGHT 1440
 
-IDirect3DSurface9* gImageSrcLeft; // Left Source image surface in video memory
-IDirect3DSurface9* gImageSrcRight; // Right Source image Surface in video memory
+IDirect3DSurface9* gImageSrcLeftRight; // Left Source image surface in video memory
 
 int gImageWidth = SCREEN_WIDTH; // Source image width
 int gImageHeight = SCREEN_HEIGHT; // Source image height
@@ -138,11 +138,10 @@ void initD3D(HWND hWnd)
         &d3dpp,
         &d3ddev);
 
-    d3ddev->CreateOffscreenPlainSurface(gImageWidth, gImageHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcLeft, NULL);
-    d3ddev->CreateOffscreenPlainSurface(gImageWidth, gImageHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcRight, NULL);
+    d3ddev->CreateOffscreenPlainSurface(gImageWidth, gImageHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcLeftRight, NULL);
 
-    d3ddev->ColorFill(gImageSrcLeft, NULL, D3DCOLOR_XRGB(0, 0, 0));
-    d3ddev->ColorFill(gImageSrcRight, NULL, D3DCOLOR_XRGB(255, 255, 255));
+    D3DXLoadSurfaceFromFile(gImageSrcLeftRight, NULL, NULL, L"c:\\Flugan\\snapshot.png", NULL,
+        D3DX_FILTER_NONE, 0, NULL);
 }
 
 // this is the function used to render a single frame
@@ -160,12 +159,8 @@ void render_frame(void)
 
     // Blit left src image to left side of stereo
     RECT srcRect = { 0, 0, gImageWidth, gImageHeight };
-    RECT destRect = { 0, 0, gImageWidth, gImageHeight };
-    d3ddev->StretchRect(gImageSrcLeft, &srcRect, gImageSrc, &destRect, D3DTEXF_LINEAR);
-
-    // Blit right src image to right side of stereo
-    destRect = { gImageWidth, 0, 2 * gImageWidth, gImageHeight };
-    d3ddev->StretchRect(gImageSrcRight, &srcRect, gImageSrc, &destRect, D3DTEXF_LINEAR);
+    RECT destRect = { 0, 0, 2 * gImageWidth, gImageHeight };
+    d3ddev->StretchRect(gImageSrcLeftRight, &srcRect, gImageSrc, &destRect, D3DTEXF_LINEAR);
 
     // Stereo Blit defines
 #define NVSTEREO_IMAGE_SIGNATURE 0x4433564e //NV3D
@@ -219,8 +214,7 @@ void render_frame(void)
 // this is the function that cleans up Direct3D and COM
 void cleanD3D(void)
 {
-    gImageSrcLeft->Release();
-    gImageSrcRight->Release();
+    gImageSrcLeftRight->Release();
 
     d3ddev->Release();    // close and release the 3D device
     d3d->Release();    // close and release Direct3D
