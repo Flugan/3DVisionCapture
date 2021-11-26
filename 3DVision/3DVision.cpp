@@ -24,7 +24,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 #define SCREEN_WIDTH  2560
 #define SCREEN_HEIGHT 1440
 
-IDirect3DSurface9* gImageSrcLeftRight; // Left Source image surface in video memory
+IDirect3DSurface9* gImageSrcLeftRight; // SBS image
 
 int gImageWidth = SCREEN_WIDTH; // Source image width
 int gImageHeight = SCREEN_HEIGHT; // Source image height
@@ -45,14 +45,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    // wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
     wc.lpszClassName = L"WindowClass";
 
     RegisterClassEx(&wc);
 
     hWnd = CreateWindowEx(NULL,
         L"WindowClass",
-        L"3D Vision",
+        L"3D Vision9",
         WS_POPUP,    // fullscreen values // WS_EX_TOPMOST | 
         0, 0,    // the starting x and y positions should be 0
         SCREEN_WIDTH, SCREEN_HEIGHT,    // set window to new resolution
@@ -139,16 +138,14 @@ void initD3D(HWND hWnd)
         &d3ddev);
 
     d3ddev->CreateOffscreenPlainSurface(gImageWidth, gImageHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcLeftRight, NULL);
-
-    D3DXLoadSurfaceFromFile(gImageSrcLeftRight, NULL, NULL, L"c:\\Flugan\\snapshot.png", NULL,
-        D3DX_FILTER_NONE, 0, NULL);
+    D3DXLoadSurfaceFromFile(gImageSrcLeftRight, NULL, NULL, L"c:\\flugan\\snapshot.png", NULL, D3DX_FILTER_NONE, 0, NULL);
 }
 
 // this is the function used to render a single frame
 void render_frame(void)
 {
     d3ddev->BeginScene();    // begins the 3D scene
-
+    
     IDirect3DSurface9* gImageSrc = NULL; // Source stereo image beeing created
 
     d3ddev->CreateOffscreenPlainSurface(
@@ -157,11 +154,16 @@ void render_frame(void)
         D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, // Surface is in video memory
         &gImageSrc, NULL);
 
-    // Blit left src image to left side of stereo
-    RECT srcRect = { 0, 0, gImageWidth, gImageHeight };
-    RECT destRect = { 0, 0, 2 * gImageWidth, gImageHeight };
-    d3ddev->StretchRect(gImageSrcLeftRight, &srcRect, gImageSrc, &destRect, D3DTEXF_LINEAR);
-
+    // Blit SBS src image to both side of stereo
+    for (int i = 0; i < gImageWidth; i++)
+    {
+        int j = 2 * i;
+        RECT srcRect = { i, 0, i + 1, gImageHeight };
+        RECT destRect = { j, 0, j + 1, gImageHeight };
+        d3ddev->StretchRect(gImageSrcLeftRight, &srcRect, gImageSrc, &destRect, D3DTEXF_NONE);
+        destRect = { j + 1 , 0, j + 2, gImageHeight };
+        d3ddev->StretchRect(gImageSrcLeftRight, &srcRect, gImageSrc, &destRect, D3DTEXF_NONE);
+    }
     // Stereo Blit defines
 #define NVSTEREO_IMAGE_SIGNATURE 0x4433564e //NV3D
 
