@@ -1,6 +1,7 @@
 // include the basic windows header files and the Direct3D header file
 #include <windows.h>
 #include <windowsx.h>
+#include <direct.h>
 #include <d3d9.h>
 #include <D3dx9tex.h>
 
@@ -49,10 +50,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     RegisterClassEx(&wc);
 
-    hWnd = CreateWindowEx(NULL,
+    hWnd = CreateWindowEx(WS_EX_TOPMOST,
         L"WindowClass",
-        L"3D Vision9",
-        WS_POPUP,    // fullscreen values // WS_EX_TOPMOST | 
+        L"3D Vision 9",
+        WS_POPUP,    // fullscreen values
         0, 0,    // the starting x and y positions should be 0
         SCREEN_WIDTH, SCREEN_HEIGHT,    // set window to new resolution
         NULL,
@@ -125,8 +126,8 @@ void initD3D(HWND hWnd)
     d3dpp.BackBufferCount = 1;
     d3dpp.hDeviceWindow = hWnd;    // set the window to be used by Direct3D
     d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
-    d3dpp.BackBufferWidth = SCREEN_WIDTH;    // set the width of the buffer
-    d3dpp.BackBufferHeight = SCREEN_HEIGHT;    // set the height of the buffer
+    d3dpp.BackBufferWidth = gImageWidth;    // set the width of the buffer
+    d3dpp.BackBufferHeight = gImageHeight;    // set the height of the buffer
 
 
     // create a device class using this information and the info from the d3dpp stuct
@@ -136,16 +137,16 @@ void initD3D(HWND hWnd)
         D3DCREATE_SOFTWARE_VERTEXPROCESSING,
         &d3dpp,
         &d3ddev);
-
-    d3ddev->CreateOffscreenPlainSurface(gImageWidth, gImageHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcLeftRight, NULL);
-    D3DXLoadSurfaceFromFile(gImageSrcLeftRight, NULL, NULL, L"c:\\flugan\\snapshot.png", NULL, D3DX_FILTER_NONE, 0, NULL);
 }
 
 // this is the function used to render a single frame
-void render_frame(void)
+void render_frame()
 {
     d3ddev->BeginScene();    // begins the 3D scene
     
+    d3ddev->CreateOffscreenPlainSurface(gImageWidth, gImageHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcLeftRight, NULL);
+    D3DXLoadSurfaceFromFile(gImageSrcLeftRight, NULL, NULL, L"snapshot.png", NULL, D3DX_FILTER_NONE, 0, NULL);
+
     IDirect3DSurface9* gImageSrc = NULL; // Source stereo image beeing created
 
     d3ddev->CreateOffscreenPlainSurface(
@@ -153,7 +154,6 @@ void render_frame(void)
         gImageHeight + 1, // Stereo height add one raw to encode signature
         D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, // Surface is in video memory
         &gImageSrc, NULL);
-
     // Blit SBS src image to both side of stereo
     for (int i = 0; i < gImageWidth; i++)
     {
@@ -214,7 +214,7 @@ void render_frame(void)
 }
 
 // this is the function that cleans up Direct3D and COM
-void cleanD3D(void)
+void cleanD3D()
 {
     gImageSrcLeftRight->Release();
 
