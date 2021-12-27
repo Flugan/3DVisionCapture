@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="NVAPI">
+      <UniqueIdentifier>{e83418c0-e78e-4f45-b4d5-6fa79c52cd22}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3DVisionDirect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nvapi.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_common.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_d3dext.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_salend.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_salstart.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_sli.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_stereo.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="nvapi_lite_surround.h">
+      <Filter>NVAPI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="nvapi.lib">
+      <Filter>NVAPI</Filter>
+    </Library>
+    <Library Include="nvapi64.lib">
+      <Filter>NVAPI</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
