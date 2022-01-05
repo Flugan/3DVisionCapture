@@ -228,33 +228,28 @@ void RenderFrame()
     IDirect3DSurface9* gImageSrcLeftRight; // SBS image
     g_dev->CreateOffscreenPlainSurface(g_ScreenWidth, g_ScreenHeight, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &gImageSrcLeftRight, NULL);
     D3DXLoadSurfaceFromFile(gImageSrcLeftRight, NULL, NULL, L"snapshot.png", NULL, D3DX_FILTER_NONE, 0, NULL);
-    
-    
+    g_dev->BeginScene();    // begins the 3D scene    
 
     status = NvAPI_Stereo_SetActiveEye(g_StereoHandle, NVAPI_STEREO_EYE_LEFT);
     if (SUCCEEDED(status)) {
-        g_dev->BeginScene();    // begins the 3D scene
         IDirect3DSurface9* pBackBuffer;
         g_dev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
-
         RECT Rect = { 0, 0, g_ScreenWidth, g_ScreenHeight };
         g_dev->StretchRect(gImageSrcLeftRight, &Rect, pBackBuffer, &Rect, D3DTEXF_NONE);
         pBackBuffer->Release();
-        g_dev->EndScene();    // ends the 3D scene
     }
 
     status = NvAPI_Stereo_SetActiveEye(g_StereoHandle, NVAPI_STEREO_EYE_RIGHT);
     if (SUCCEEDED(status)) {
-        g_dev->BeginScene();    // begins the 3D scene
         IDirect3DSurface9* pBackBuffer;
         g_dev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
         RECT Rect = { 0, 0, g_ScreenWidth, g_ScreenHeight };
         g_dev->StretchRect(gImageSrcLeftRight, &Rect, pBackBuffer, &Rect, D3DTEXF_NONE);
         pBackBuffer->Release();
-        g_dev->EndScene();    // ends the 3D scene
     }
 
     gImageSrcLeftRight->Release();
+    g_dev->EndScene();    // ends the 3D scene
 
     g_dev->Present(NULL, NULL, NULL, NULL);   // displays the created frame on the screen
 }
